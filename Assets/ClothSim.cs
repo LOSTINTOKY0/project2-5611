@@ -2,6 +2,12 @@ using UnityEngine;
 using System.Collections.Generic;
 public class ClothSim : MonoBehaviour
 {
+
+
+
+
+
+  
 //public gameObject m;// mesh;
   public float width = 1;
   public float height = 1;
