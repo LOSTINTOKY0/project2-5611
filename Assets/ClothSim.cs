@@ -2,16 +2,16 @@ using UnityEngine;
 using System.Collections.Generic;
 public class ClothSim : MonoBehaviour
 {
-//public gameObject m;// mesh;
-  public float width = 1;
-  public float height = 1;
-  public const int nSlices = 10;
-  public const int nStacks = 10;
+
+  public float width = 1; //width of cloth
+  public float height = 1; //height of cloth
+  public const int nSlices = 10; //number of verts in x direction
+  public const int nStacks = 10; //number of verts in y direction
   int stringsY = nSlices;
   int stringsX = nStacks;
   int numNodes = nStacks;
   Vector3 gravity = new Vector3(0,0,0);
-  Vector3 stringTop = new Vector3(20,50,30);
+  Vector3 stringTop = new Vector3(20,50,30); // not used atm
 
   //need to be initialized in start but no time rn
   float restLen;// = width/nSlices;
@@ -81,7 +81,7 @@ public void Update(){
     Debug.Log("new pos is " + pos[j*nSlices +i]+(vel[j*nSlices +i]*(Time.deltaTime)/2.0f));
   }
     }
-    updateMesh(GetComponent<MeshFilter>().mesh);
+    //updateMesh(GetComponent<MeshFilter>().mesh);
     }
 
 
