@@ -2,12 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 public class ClothSim : MonoBehaviour
 {
-
-
-
-
-
-  
 //public gameObject m;// mesh;
   public float width = 1;
   public float height = 1;
@@ -16,7 +10,7 @@ public class ClothSim : MonoBehaviour
   int stringsY = nSlices;
   int stringsX = nStacks;
   int numNodes = nStacks;
-  Vector3 gravity = new Vector3(0,400,0);
+  Vector3 gravity = new Vector3(0,0,0);
   Vector3 stringTop = new Vector3(20,50,30);
 
   //need to be initialized in start but no time rn
@@ -28,9 +22,9 @@ public class ClothSim : MonoBehaviour
   float friction = -.005f;
 
   //need to put positions of nodes into list by down-across rather than across-down
-  Vector3[] pos = new Vector3[nSlices*nStacks*2];
-  Vector3[] vel = new Vector3[nSlices*nStacks*2];
-  Vector3[] acc = new Vector3[nSlices*nStacks*2];
+  Vector3[] pos = new Vector3[nSlices*nStacks*4];
+  Vector3[] vel = new Vector3[nSlices*nStacks*4];
+  Vector3[] acc = new Vector3[nSlices*nStacks*4];
 
     List<Vector3> newVertices = new List<Vector3>();
     List<Vector2> newUV= new List<Vector2>();
@@ -50,9 +44,10 @@ public class ClothSim : MonoBehaviour
 public void Update(){
    //gravity gets reset each time
   for(int j = 0; j< nSlices*2; j++){
-    for(int i = 0; i < nStacks; i++){
+    for(int i = 0; i < nStacks*2; i++){
         //Debug.Log(j*nSlices + i);
         acc[j*nSlices + i] = gravity;
+
       //Debug.Log(j*nSlices + i);
 
     }
@@ -60,8 +55,8 @@ public void Update(){
 
 
   //Compute (damped) Hooke's law for each spring
-    for (int j = 0; j < nSlices; j++){
-  for (int i = 0; i < nStacks-1; i++){
+    for (int j = 0; j < nSlices*2; j++){
+  for (int i = 0; i < nStacks*2; i++){
     Vector3 diff = pos[nSlices*j + i+1]- pos[j*nSlices + i];
     float stringF = -k*(diff.magnitude - restLen);
     diff.Normalize();
@@ -77,10 +72,13 @@ public void Update(){
   }
     }
   //Eulerian integration
-    for (int j = 0; j < nSlices; j++){
-  for (int i = 1; i < nStacks; i++){
+    for (int j = 0; j < nSlices*2; j++){
+  for (int i = 1; i < nStacks*2; i++){
     vel[j*nSlices +i] = vel[j*nSlices +i]+(acc[j*nSlices +i]*(Time.deltaTime));
     pos[j*nSlices +i] = pos[j*nSlices +i]+(vel[j*nSlices +i]*(Time.deltaTime));
+    Debug.Log("delta time is " +Time.deltaTime);
+
+    Debug.Log("new pos is " + pos[j*nSlices +i]+(vel[j*nSlices +i]*(Time.deltaTime)/2.0f));
   }
     }
     updateMesh(GetComponent<MeshFilter>().mesh);
@@ -88,9 +86,10 @@ public void Update(){
 
 
 void ready(Mesh mesh){
-  for(float x = -width; x<width - width/nSlices; x+=(2.0f*width/nSlices)){
-      for(float y = -height; y < (height); y+=(height/nStacks)){
-
+  int a = 0;
+  for(float x = -width; x<width - 2.0f*width/nSlices; x+=(2.0f*width/nSlices)){
+      for(float y = -height; y < (height) ; y+=(height/nStacks)){
+        Debug.Log(x + " "+ y);
           // float y2 = y+(2.0f*height/nStacks);
            float x2 = x+(2.0f*(width/nSlices));
 
@@ -104,6 +103,10 @@ void ready(Mesh mesh){
        //first 2 triangle points
            newVertices.Add( new Vector3(x,y,0));//1
            newVertices.Add(new Vector3(x2,y,0));//2
+           pos[a] = new Vector3(x,y,0);
+           a++;
+           pos[a] = new Vector3(x2,y,0);
+           a++;
       //add normals
         //   normals.Add(Vector3(0,0,1).ToUnit());
         //   normals.Add(Vector3(0,0,1).ToUnit());
@@ -133,7 +136,7 @@ void setupMesh(Mesh mesh){
   mesh.vertices = newVertices.ToArray();
     mesh.uv = newUV.ToArray();
     mesh.triangles = newTriangles.ToArray();
-    Debug.Log(mesh.vertices.Length + " " + nSlices*nStacks*2);
+    Debug.Log(mesh.vertices.Length + " " + nSlices*nStacks*4);
 
     /*weights = new BoneWeight[newVertices.Count];
     for (int i = 0; i<newVertices.Count; i++) {
