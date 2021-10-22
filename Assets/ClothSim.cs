@@ -9,9 +9,6 @@ public class ClothSim : MonoBehaviour
   public float height = 1; //height of cloth
   public const int nSlices = 10; //number of verts in x direction
   public const int nStacks = 10; //number of verts in y direction
-  int stringsY = nSlices;
-  int stringsX = nStacks;
-  int numNodes = nStacks;
   Vector3 gravity = new Vector3(0,0,0);
   Vector3 stringTop = new Vector3(20,50,30); // not used atm
 
@@ -24,6 +21,7 @@ public class ClothSim : MonoBehaviour
   float friction = -.005f;
   float ks = 2500; //TRY-IT: How does changing k affect resting length of the rope?
 float kd = 50;
+
 
   //need to put positions of nodes into list by down-across rather than across-down
   Vector3[] pos = new Vector3[nSlices*nStacks*2];
@@ -47,7 +45,7 @@ float kd = 50;
     }
 
 public void Update(){
-   //gravity gets reset each time
+  /* //gravity gets reset each time
   for(int j = 0; j< nSlices; j++){
     for(int i = 0; i <= nStacks; i++){
         //Debug.Log(j*nSlices + i);
@@ -87,14 +85,16 @@ public void Update(){
   }
     }
     //updateMesh(GetComponent<MeshFilter>().mesh);
-    }
+  */
+updateMesh(GetComponent<MeshFilter>().mesh);
+}
 
 
 void ready(Mesh mesh){
   int a = 0;
   for(float x = 0; x< width; x+=(width/(float)nSlices)){
       for(float y = 0; y <= height ; y+=(height/(float)nStacks)){
-       Debug.Log(x + " "+ y);
+       //Debug.Log(x + " "+ y);
            float x2 = x+(2.0f*(width/nSlices));
 
            //starts at 0,0 goes to 1,1 for image
@@ -153,7 +153,7 @@ void updateMesh(Mesh mesh){
       Vector3 e = pos[(i+1)*nSlices + j] - pos[i*nSlices+j];
       float l = (float)Math.Sqrt(Vector3.Dot(e,e));
       e = e/l; //normalize
-    float  v1 = Vector3.Dot(e,vel[i*nSlices*j]);
+    float  v1 = Vector3.Dot(e,vel[i*nSlices+j]);
       float v2 = Vector3.Dot(e,vel[(i+1)*nSlices+j]);
       float f = -ks*(l - restLen)-kd*(v1-v2);
       newVel[i*nSlices+j] += f*e*Time.deltaTime;
