@@ -13,10 +13,10 @@ public class ClothSim : MonoBehaviour
   Vector3 stringTop = new Vector3(20,50,30); // not used atm
 
   //need to be initialized in start but no time rn
-  float restLen = .02f;// = width/nSlices;
+  float restLen = 0.0f;// = width/nSlices;
   //float restLenY;// = height/nStacks;
-  float mass = 1.0f; //
-  float friction = -.005f;
+  //float mass = 1.0f; //
+  //float friction = -.005f;
   float ks = 2500; //TRY-IT: How does changing k affect resting length of the rope?
 float kd = 5;
 
@@ -92,7 +92,7 @@ void ready(Mesh mesh){
   int a = 0;
   for(float x = 0; x< width; x+=(width/(float)nSlices)){
       for(float y = 0; y <= height ; y+=(height/(float)nStacks)){
-       //Debug.Log(x + " "+ y);
+       Debug.Log(x + " "+ y);
            float x2 = x+(2.0f*(width/nSlices));
 
            //starts at 0,0 goes to 1,1 for image
@@ -106,7 +106,7 @@ void ready(Mesh mesh){
            newVertices.Add( new Vector3(x,y,0));//1
            newVertices.Add(new Vector3(x2,y,0));//2
            //Debug.Log("a is "+ a + " pos length is"+ pos.Length);
-           Debug.Log("vertices size is "+newVertices.Count);
+          // Debug.Log("vertices size is "+newVertices.Count);
            pos[a] = new Vector3(x,y,0);
            a++;
            pos[a] = new Vector3(x2,y,0);
@@ -118,13 +118,14 @@ void ready(Mesh mesh){
            //now triangle indices
            if(y!=0){
            int vert = newVertices.Count-1;
+           newTriangles.Add(vert-1);
+           newTriangles.Add(vert-3);
+           newTriangles.Add(vert-2);
                newTriangles.Add(vert);
                newTriangles.Add( vert-1);
                newTriangles.Add(vert-2);
                // newTriangles for the second triangle, note some are reused
-               newTriangles.Add(vert-1);
-               newTriangles.Add(vert-3);
-               newTriangles.Add(vert-2);
+
 
            }
   }}
@@ -158,9 +159,9 @@ void updateMesh(Mesh mesh){
 
       newVel[i*nSlices+j] += f*e*Time.deltaTime;
       newVel[(i+1)*nSlices+j] -= f*e*Time.deltaTime;
-    /*  Vector3 force = e*f;
-       acc[j*nslices +i] = acc[j*nslices +i]+force*(-1.0/mass));
-       acc[j+1*nSlices+i] = acc[(j+1)*nSlices+i]+force*(1.0/mass)); */
+  /*  Vector3 force = e*f;
+       acc[j*nSlices +i] = acc[j*nSlices +i]+force*(-1.0f/mass);
+       acc[(j+1)*nSlices+i] = acc[(j+1)*nSlices+i]+force*(1.0f/mass); */
 }
 }//vert
 for(int i  = 0; i<(nSlices); i++){
@@ -175,10 +176,10 @@ for(int i  = 0; i<(nSlices); i++){
     newVel[i*nSlices+j+1] -= f*e*Time.deltaTime;
 
   /*  Vector3 force = e*f;
-     acc[j*nslices +i] = acc[j*nslices +i]+force*(-1.0/mass));
-     acc[j*nSlices+i+1] = acc[j*nSlices+i+1]+force*(1.0/mass));
-*/
+     acc[j*nSlices +i] = acc[j*nSlices +i]+force*(-1.0f/mass);
+     acc[j*nSlices+i+1] = acc[j*nSlices+i+1]+force*(1.0f/mass);
 
+*/
 
 
 
@@ -194,7 +195,7 @@ for(int k= 0; k<newVel.Length; k++){
 
   vel[k] = newVel[k];//update vel.
   pos[k] += vel[k]*Time.deltaTime;
-    //acc[k] = new Vector3(0,0,0);
+  acc[k] = new Vector3(0,0,0);
 
 }
 
