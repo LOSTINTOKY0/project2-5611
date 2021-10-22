@@ -13,14 +13,12 @@ public class ClothSim : MonoBehaviour
   Vector3 stringTop = new Vector3(20,50,30); // not used atm
 
   //need to be initialized in start but no time rn
-  float restLen = .2f;// = width/nSlices;
+  float restLen = .02f;// = width/nSlices;
   //float restLenY;// = height/nStacks;
   float mass = 1.0f; //
-  float k = 2500;
-  float kv = 50;
   float friction = -.005f;
   float ks = 2500; //TRY-IT: How does changing k affect resting length of the rope?
-float kd = 50;
+float kd = 5;
 
 
   //need to put positions of nodes into list by down-across rather than across-down
@@ -143,8 +141,9 @@ void setupMesh(Mesh mesh){
 
 void updateMesh(Mesh mesh){
 
+  newVel = vel;
 
-  newVel = vel; //start with old vels.
+  //start with old vels.
   //(new velocity buffer)
   //Update vels. before pos.
   for(int i  = 0; i<(nSlices-1); i++){
@@ -156,8 +155,12 @@ void updateMesh(Mesh mesh){
     float  v1 = Vector3.Dot(e,vel[i*nSlices+j]);
       float v2 = Vector3.Dot(e,vel[(i+1)*nSlices+j]);
       float f = -ks*(l - restLen)-kd*(v1-v2);
+
       newVel[i*nSlices+j] += f*e*Time.deltaTime;
       newVel[(i+1)*nSlices+j] -= f*e*Time.deltaTime;
+    /*  Vector3 force = e*f;
+       acc[j*nslices +i] = acc[j*nslices +i]+force*(-1.0/mass));
+       acc[j+1*nSlices+i] = acc[(j+1)*nSlices+i]+force*(1.0/mass)); */
 }
 }//vert
 for(int i  = 0; i<(nSlices); i++){
@@ -171,22 +174,29 @@ for(int i  = 0; i<(nSlices); i++){
     newVel[i*nSlices+j] += f*e*Time.deltaTime;
     newVel[i*nSlices+j+1] -= f*e*Time.deltaTime;
 
+  /*  Vector3 force = e*f;
+     acc[j*nslices +i] = acc[j*nslices +i]+force*(-1.0/mass));
+     acc[j*nSlices+i+1] = acc[j*nSlices+i+1]+force*(1.0/mass));
+*/
 
 
 
-for(int k= 0; k<newVel.Length; k++){
-  if(k<=nSlices){
-    newVel[k] = new Vector3(0,0,0);
-  }else if (k>nSlices){
-      newVel[k] = new Vector3(0,-0.1f,0);
-    }     //fix top row
-  vel[k] = newVel[k];//update vel.
-  pos[k] += vel[k]*Time.deltaTime;
-}
+
      //update pos
   }
 }  //horizontal
+for(int k= 0; k<newVel.Length; k++){
+  if(k%nSlices == 0||k%nSlices == 1){
+    newVel[k] = new Vector3(0,0,0);
+  }else if (k>nSlices){
+      newVel[k]=  newVel[k]+  new Vector3(0,-0.1f,0);
+    }     //fix top row
 
+  vel[k] = newVel[k];//update vel.
+  pos[k] += vel[k]*Time.deltaTime;
+    //acc[k] = new Vector3(0,0,0);
+
+}
 
     mesh.vertices = pos;
 
